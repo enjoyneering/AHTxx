@@ -27,9 +27,9 @@ Tested on:
 - Arduino ESP32
 - Arduino STM32
 
-(1) Prolonged exposure for 60 hours at humidity > 80% can lead to a temporary drift of the signal +3%. Sensor slowly returns to the calibrated state at normal operating conditions.<br>
-(2) Measurement with high frequency leads to heating of the sensor. Measurements must be > 2 seconds apart to detect a temperature change of +-0.10C.<br>
-(3) Library returns 255 if a communication error occurs, calibration coefficient is off or CRC doesn't match (for AHT2x only).
+**(1)** Prolonged exposure for 60 hours at humidity > 80% can lead to a temporary drift of the signal +3%. Sensor slowly returns to the calibrated state at normal operating conditions.<br>
+**(2)** Measurement with high frequency leads to heating of the sensor. Measurements must be > 2 seconds apart to detect a temperature change of +-0.10C.<br>
+**(3)** Library returns 255 if a communication error occurs, calibration coefficient is off or CRC doesn't match (for AHT2x only).
 
 [license-badge]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license]:       https://choosealicense.com/licenses/gpl-3.0/
