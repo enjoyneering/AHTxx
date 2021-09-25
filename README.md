@@ -13,7 +13,7 @@ This is an Arduino library for Aosong ASAIR AHT10/AHT15/AHT20/AHT21/AHT25/AM2301
 - normal operating range T -20C..+60C, RH 10%..80%
 - maximum operating rage T -40C..+80C, RH 0%..100%
 - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
-- recomended measurement frequency: 8sec..30sec (2)
+- recommended measurement frequency: 8sec..30sec (2)
 
 Supports all sensors features:
 - read humidity (3)
