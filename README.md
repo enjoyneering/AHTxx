@@ -2,7 +2,7 @@
 
 # Aosong ASAIR AHT1x/AHT2x
 
-This is an Arduino library for Aosong ASAIR AHT10/AHT15/AHT20/AHT21/AHT25/AM2301B/AM2311B Digital Humidity & Temperature Sensor
+This is an Arduino library for Aosong ASAIR AHT10/AHT15/AHT20/AHT21/AHT25/AM2301**B**/AM2311**B** Digital Humidity & Temperature Sensor
 
 - AHT1x +1.8v..+3.6v, AHT2x 2.2v..5.5v
 - AHT1x 0.25uA..320uA, AHT2x 0.25uA..980uA
