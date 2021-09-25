@@ -137,7 +137,7 @@ void loop()
 
   /* DEMO - 2, temperature call will read 6 bytes via I2C, humidity will use same 6 bytes */
   Serial.println();
-  Serial.println(F("DEMO 2: read 6-byte"));
+  Serial.println(F("DEMO 2: read 6-bytes"));
 
   ahtValue = aht10.readTemperature(); //read 6-bytes via I2C, takes 80 milliseconds
 
