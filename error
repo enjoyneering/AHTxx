@@ -1,0 +1,71 @@
+Error compiling for board Arduino Nano.
+Arduino: 1.8.13 (Windows 10), Board: "Arduino Nano, ATmega328P (Old Bootloader)"
+
+
+C:\Users\user\Documents\Arduino\libraries\AHTxx-main\src\AHTxx.cpp:91:24: error: 'bool AHTxx::begin' is not a static data member of 'class AHTxx'
+
+ bool AHTxx::begin(speed)
+
+                        ^
+
+C:\Users\user\Documents\Arduino\libraries\AHTxx-main\src\AHTxx.cpp:91:19: error: 'speed' was not declared in this scope
+
+ bool AHTxx::begin(speed)
+
+                   ^~~~~
+
+In file included from C:\Users\user\Documents\Arduino\libraries\AHTxx-main\src\AHTxx.h:53:0,
+
+                 from C:\Users\user\Documents\Arduino\libraries\AHTxx-main\src\AHTxx.cpp:48:
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h: In member function 'void AHTxx::_readMeasurement()':
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:69:13: note: candidate 1: uint8_t TwoWire::requestFrom(int, int, int)
+
+     uint8_t requestFrom(int, int, int);
+
+             ^~~~~~~~~~~
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:66:13: note: candidate 2: uint8_t TwoWire::requestFrom(uint8_t, uint8_t, uint8_t)
+
+     uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
+
+             ^~~~~~~~~~~
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h: In member function 'uint8_t AHTxx::_readStatusRegister()':
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:69:13: note: candidate 1: uint8_t TwoWire::requestFrom(int, int, int)
+
+     uint8_t requestFrom(int, int, int);
+
+             ^~~~~~~~~~~
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:66:13: note: candidate 2: uint8_t TwoWire::requestFrom(uint8_t, uint8_t, uint8_t)
+
+     uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
+
+             ^~~~~~~~~~~
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h: In member function 'uint8_t AHTxx::_getBusy(bool)':
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:69:13: note: candidate 1: uint8_t TwoWire::requestFrom(int, int, int)
+
+     uint8_t requestFrom(int, int, int);
+
+             ^~~~~~~~~~~
+
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src/Wire.h:66:13: note: candidate 2: uint8_t TwoWire::requestFrom(uint8_t, uint8_t, uint8_t)
+
+     uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
+
+             ^~~~~~~~~~~
+
+exit status 1
+
+Error compiling for board Arduino Nano.
+
+
+
+This report would have more information with
+"Show verbose output during compilation"
+option enabled in File -> Preferences.
