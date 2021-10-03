@@ -7,7 +7,7 @@
    sourse code: https://github.com/enjoyneering/
 
    Aosong ASAIR AHT1x/AHT2x features:
-   - AHT1x +1.8v..+3.6v, AHT2x 2.2v..5.5v
+   - AHT1x +1.8v..+3.6v, AHT2x +2.2v..+5.5v
    - AHT1x 0.25uA..320uA, AHT2x 0.25uA..980uA
    - temperature range -40C..+85C
    - humidity range 0%..100%
@@ -77,25 +77,38 @@ AHTxx::AHTxx(uint8_t address, AHTXX_I2C_SENSOR sensorType)
       - 4 other error
 */
 /**************************************************************************/
-#if defined(ESP8266) || defined(ESP32) || defined(STM32F4xx)
+#if defined(__AVR__)
+bool AHTxx::begin(uint32_t speed, uint32_t stretch)
+{
+  Wire.begin();
+
+  Wire.setClock(speed);                //experimental! AVR I2C bus speed 31kHz..400kHz, default 100000Hz
+
+  Wire.setWireTimeout(stretch, false); //experimental! default 25000usec, true= Wire hardware will be automatically reset on timeout
+
+#elif defined(ESP8266) || defined(ESP32)
+bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
+{
+  Wire.begin(sda, scl);
+
+  Wire.setClock(speed);               //experimental! ESP8266 I2C bus speed 1kHz..400kHz, default 100000Hz
+
+  Wire.setClockStretchLimit(stretch); //experimental! default 150000usec
+
+#elif defined(_VARIANT_ARDUINO_STM32_)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed)
 {
   Wire.begin(sda, scl);
 
-  Wire.setClock(speed);            //experimental! ESP8266 I2C bus speed: 1kHz..400kHz, default 100000Hz
+  Wire.setClock(speed); //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
 
-  #if defined(ESP8266)
-  Wire.setClockStretchLimit(1000); //experimental! default 230usec
-  #endif
 #else
-bool AHTxx::begin(speed) 
+bool AHTxx::begin()
 {
   Wire.begin();
-
-  Wire.setClock(speed);            //experimental! AVR I2C bus speed: 31kHz..400kHz, default 100000Hz
 #endif
 
-  delay(AHT2X_POWER_ON_DELAY);    //wait for sensor to initialize
+  delay(AHT2X_POWER_ON_DELAY);                                                           //wait for sensor to initialize
 
   return ((setNormalMode() == true) && (_getCalibration() == AHTXX_STATUS_CTRL_CAL_ON)); //set mode & check calibration bit
 }
@@ -330,20 +343,20 @@ void AHTxx::_readMeasurement()
   /* read data from sensor */
   uint8_t dataSize;
 
-  if   (_sensorType == AHT1x_SENSOR) dataSize = 6; //{status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
+  if   (_sensorType == AHT1x_SENSOR) dataSize = 6;     //{status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
   else                               dataSize = 7;
 
   #if defined(_VARIANT_ARDUINO_STM32_)
   Wire.requestFrom(_address, dataSize);
   #else
-  Wire.requestFrom(_address, dataSize, true);      //read n-byte to "wire.h" rxBuffer, true-send stop after transmission
+  Wire.requestFrom(_address, dataSize, (uint8_t)true); //read n-byte to "wire.h" rxBuffer, true-send stop after transmission
   #endif
 
   if (Wire.available() != dataSize)
   {
-    _status = AHTXX_DATA_ERROR;                    //update status byte, received data smaller than expected
+    _status = AHTXX_DATA_ERROR;                        //update status byte, received data smaller than expected
 
-    return;                                        //no reason to continue
+    return;                                            //no reason to continue
   }
 
   /* read n-bytes from "wire.h" rxBuffer */
@@ -429,11 +442,11 @@ uint8_t AHTxx::_readStatusRegister()
   #if defined(_VARIANT_ARDUINO_STM32_)
   Wire.requestFrom(_address, 1);
   #else
-  Wire.requestFrom(_address, 1, true);                     //read 1-byte to "wire.h" rxBuffer, true-send stop after transmission
+  Wire.requestFrom(_address, (uint8_t)1, (uint8_t)true);   //read 1-byte to "wire.h" rxBuffer, true-send stop after transmission
   #endif
 
-  if (Wire.available() == 1) return Wire.read();           //read 1-byte from "wire.h" rxBuffer
-                             return AHTXX_ERROR;           //collision on I2C bus, "wire.h" rxBuffer is empty
+  if (Wire.available() == 1) {return Wire.read();}         //read 1-byte from "wire.h" rxBuffer
+                              return AHTXX_ERROR;          //collision on I2C bus, "wire.h" rxBuffer is empty
 }
 
 
@@ -453,8 +466,8 @@ uint8_t AHTxx::_getCalibration()
 {
   uint8_t value = _readStatusRegister();
 
-  if (value != AHTXX_ERROR) return (value & AHTXX_STATUS_CTRL_CAL_ON); //0x08=loaded, 0x00=not loaded
-                            return AHTXX_ERROR;                        //collision on I2C bus, sensor didn't return ACK
+  if (value != AHTXX_ERROR) {return (value & AHTXX_STATUS_CTRL_CAL_ON);} //0x08=loaded, 0x00=not loaded
+                             return AHTXX_ERROR;                         //collision on I2C bus, sensor didn't return ACK
 }
 
 
@@ -471,19 +484,19 @@ uint8_t AHTxx::_getCalibration()
 /**************************************************************************/
 uint8_t AHTxx::_getBusy(bool readAHT)
 {
-  if (readAHT == AHTXX_FORCE_READ_DATA)                 //force to read data via I2C & update "_rawData[]" buffer
+  if (readAHT == AHTXX_FORCE_READ_DATA)                    //force to read data via I2C & update "_rawData[]" buffer
   {
     delay(AHTXX_CMD_DELAY);
 
     #if defined(_VARIANT_ARDUINO_STM32_)
     Wire.requestFrom(_address, 1);
     #else
-    Wire.requestFrom(_address, 1, true);                //read 1-byte to "wire.h" rxBuffer, true-send stop after transmission
+    Wire.requestFrom(_address, (uint8_t)1, (uint8_t)true); //read 1-byte to "wire.h" rxBuffer, true-send stop after transmission
     #endif
 
-    if (Wire.available() != 1) return AHTXX_DATA_ERROR; //no reason to continue, "return" terminates the entire function & "break" just exits the loop
+    if (Wire.available() != 1) return AHTXX_DATA_ERROR;    //no reason to continue, "return" terminates the entire function & "break" just exits the loop
 
-    _rawData[0] = Wire.read();                          //read 1-byte from "wire.h" rxBuffer
+    _rawData[0] = Wire.read();                             //read 1-byte from "wire.h" rxBuffer
   }
 
   if   ((_rawData[0] & AHTXX_STATUS_CTRL_BUSY) == AHTXX_STATUS_CTRL_BUSY) _status = AHTXX_BUSY_ERROR;   //0x80=busy, 0x00=measurement completed
