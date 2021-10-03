@@ -84,7 +84,7 @@ bool AHTxx::begin(uint32_t speed, uint32_t stretch)
 
   Wire.setClock(speed);                //experimental! AVR I2C bus speed 31kHz..400kHz, default 100000Hz
 
-  Wire.setWireTimeout(stretch, false); //experimental! default 25000usec, true= Wire hardware will be automatically reset on timeout
+  Wire.setWireTimeout(stretch, false); //experimental! default 25000usec, true-Wire hardware will be automatically reset on timeout
 
 #elif defined(ESP8266) || defined(ESP32)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
