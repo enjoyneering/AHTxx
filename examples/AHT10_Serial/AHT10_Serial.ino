@@ -7,7 +7,7 @@
    sourse code: https://github.com/enjoyneering/
 
    Aosong ASAIR AHT1x/AHT2x features:
-   - AHT1x +1.8v..+3.6v, AHT2x 2.2v..5.5v
+   - AHT1x +1.8v..+3.6v, AHT2x +2.2v..+5.5v
    - AHT1x 0.25uA..320uA, AHT2x 0.25uA..980uA
    - temperature range -40C..+85C
    - humidity range 0%..100%
@@ -96,7 +96,7 @@ void setup()
 /**************************************************************************/
 void loop()
 {
-  /* DEMO - 1, every temperature or humidity call will read 6 bytes over I2C, total 12 bytes */
+  /* DEMO - 1, every temperature or humidity call will read 6-bytes over I2C, total 12-bytes */
   Serial.println();
   Serial.println(F("DEMO 1: read 12-bytes"));
 
@@ -135,9 +135,9 @@ void loop()
 
   delay(2000); //measurement with high frequency leads to heating of the sensor, see NOTE
 
-  /* DEMO - 2, temperature call will read 6 bytes via I2C, humidity will use same 6 bytes */
+  /* DEMO - 2, temperature call will read 6-bytes via I2C, humidity will use same 6-bytes */
   Serial.println();
-  Serial.println(F("DEMO 2: read 6-bytes"));
+  Serial.println(F("DEMO 2: read 6-byte"));
 
   ahtValue = aht10.readTemperature(); //read 6-bytes via I2C, takes 80 milliseconds
 
