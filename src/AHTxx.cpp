@@ -149,6 +149,8 @@ float AHTxx::readHumidity(bool readI2C)
            humidity <<= 4;
            humidity  |= _rawData[3] >> 4;
 
+  if (humidity > 0x100000) {humidity = 0x100000;}           //check if RH>100, no need to check for RH<0 since "humidity" is "uint"
+
   return ((float)humidity / 0x100000) * 100;                //TODO: H<0 && H<100 check
 }
 
