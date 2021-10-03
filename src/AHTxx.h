@@ -7,7 +7,7 @@
    sourse code: https://github.com/enjoyneering/
 
    Aosong ASAIR AHT1x/AHT2x features:
-   - AHT1x +1.8v..+3.6v, AHT2x 2.2v..5.5v
+   - AHT1x +1.8v..+3.6v, AHT2x +2.2v..+5.5v
    - AHT1x 0.25uA..320uA, AHT2x 0.25uA..980uA
    - temperature range -40C..+85C
    - humidity range 0%..100%
@@ -102,7 +102,8 @@
 #define AHTXX_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
 /* misc */
-#define AHTXX_I2C_SPEED_100KHZ   1000000 //sensor speed 100KHz..400KHz, in Hz
+#define AHTXX_I2C_SPEED_100KHZ   1000000 //sensor I2C speed 100KHz..400KHz, in Hz
+#define AHTXX_I2C_STRETCH_USEC   1000    //I2C stretch time, in usec
 #define AHTXX_FORCE_READ_DATA    true    //force to read data via I2C
 #define AHTXX_USE_READ_DATA      false   //force to use data from previous read
 
@@ -127,11 +128,15 @@ class AHTxx
 
    AHTxx(uint8_t address = AHTXX_ADDRESS_X38, AHTXX_I2C_SENSOR = AHT1x_SENSOR);
 
-   #if defined(ESP8266) || defined(ESP32) || defined(STM32F4xx)
+  #if defined(__AVR__)
+   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+  #elif defined(ESP8266) || defined(ESP32)
+   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+  #elif defined(_VARIANT_ARDUINO_STM32_)
    bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ);
-   #else
-   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_100KHZ);
-   #endif
+  #else
+   bool     begin();
+  #endif
 
    float    readHumidity(bool readAHT = AHTXX_FORCE_READ_DATA);
    float    readTemperature(bool readAHT = AHTXX_FORCE_READ_DATA);
