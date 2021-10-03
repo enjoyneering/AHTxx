@@ -20,6 +20,7 @@ softReset	KEYWORD2
 getStatus	KEYWORD2
 setType	KEYWORD2
 
+
 #######################################
 # Instances	(KEYWORD2)
 #######################################
