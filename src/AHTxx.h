@@ -102,7 +102,7 @@
 #define AHTXX_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
 /* misc */
-#define AHTXX_I2C_SPEED_100KHZ   1000000 //sensor I2C speed 100KHz..400KHz, in Hz
+#define AHTXX_I2C_SPEED_100KHZ   100000  //sensor I2C speed 100KHz..400KHz, in Hz
 #define AHTXX_I2C_STRETCH_USEC   1000    //I2C stretch time, in usec
 #define AHTXX_FORCE_READ_DATA    true    //force to read data via I2C
 #define AHTXX_USE_READ_DATA      false   //force to use data from previous read
