@@ -18,8 +18,8 @@
    - response time 8..30sec*
    - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
      *measurement with high frequency leads to heating
-      of the sensor, to detect +-0.1C time between measurements
-      should be > 2 seconds
+      of the sensor, must be > 2 seconds apart to keep
+      self-heating below 0.1C
 
    This device uses I2C bus to communicate, specials pins are required to interface
    Board:                                    SDA              SCL              Level
@@ -34,11 +34,11 @@
    ESP32.................................... GPIO21/D21       GPIO22/D22       3.3v
 
    Frameworks & Libraries:
-   ATtiny  Core          - https://github.com/SpenceKonde/ATTinyCore
-   ESP32   Core          - https://github.com/espressif/arduino-esp32
-   ESP8266 Core          - https://github.com/esp8266/Arduino
-   STM32   Core          - https://github.com/stm32duino/Arduino_Core_STM32
-                         - https://github.com/rogerclarkmelbourne/Arduino_STM32
+   ATtiny  Core - https://github.com/SpenceKonde/ATTinyCore
+   ESP32   Core - https://github.com/espressif/arduino-esp32
+   ESP8266 Core - https://github.com/esp8266/Arduino
+   STM32   Core - https://github.com/stm32duino/Arduino_Core_STM32
+
 
    GNU GPL license, all text above must be included in any redistribution,
    see link for details  - https://www.gnu.org/licenses/licenses.html
