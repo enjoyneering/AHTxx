@@ -18,8 +18,8 @@
    - response time 8..30sec*
    - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
      *measurement with high frequency leads to heating
-      of the sensor, to detect +-0.1C time between measurements
-      should be > 2 seconds
+      of the sensor, measurements must be > 2 seconds
+      apart to keep self-heating below 0.1C
 
    This device uses I2C bus to communicate, specials pins are required to interface
    Board:                                    SDA              SCL              Level
@@ -160,7 +160,6 @@ class AHTxx
    uint8_t  _getCalibration();
    uint8_t  _getBusy(bool readAHT = AHTXX_FORCE_READ_DATA);
    bool     _checkCRC8();
-   
 };
 
 #endif
