@@ -113,9 +113,9 @@ bool AHTxx::begin()
   Wire.begin();
 #endif
 
-  delay(AHT2X_POWER_ON_DELAY);                                                           //wait for sensor to initialize
+  delay(AHT2X_POWER_ON_DELAY); //wait for sensor to initialize
 
-  return ((setNormalMode() == true) && (_getCalibration() == AHTXX_STATUS_CTRL_CAL_ON)); //set mode & check calibration bit
+  return softReset();          //soft reset is recommended at start (reset, set normal mode, set calibration bit & check calibration bit)
 }
 
 
