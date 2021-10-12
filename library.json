@@ -12,7 +12,7 @@
     "type": "git",
     "url":  "https://github.com/enjoyneering/AHTxx.git"
   },
-  "version":    "1.1.3",
+  "version":    "1.1.4",
   "frameworks": "arduino",
   "platforms":  "*"
 }
