@@ -143,9 +143,9 @@ bool AHTxx::begin()
     - maximum operating rage T -40C..+80C, RH 0%..100%
 */
 /**************************************************************************/
-float AHTxx::readHumidity(bool readI2C)
+float AHTxx::readHumidity(bool readAHT)
 {
-  if (readI2C == AHTXX_FORCE_READ_DATA) {_readMeasurement();} //force to read data via I2C & update "_rawData[]" buffer
+  if (readAHT == AHTXX_FORCE_READ_DATA) {_readMeasurement();} //force to read data via I2C & update "_rawData[]" buffer
   if (_status != AHTXX_NO_ERROR)        {return AHTXX_ERROR;} //no reason to continue, call "getStatus()" for error description
 
   uint32_t humidity   = _rawData[1];                          //20-bit raw humidity data
