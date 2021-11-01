@@ -73,6 +73,7 @@ AHTxx::AHTxx(uint8_t address, AHTXX_I2C_SENSOR sensorType)
 
     NOTE:
     - call this function before doing anything else!!!
+    - speed in Hz, stretch in usec
 
     - returned value by "Wire.endTransmission()":
       - 0 success
