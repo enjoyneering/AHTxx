@@ -36,7 +36,7 @@
                                               see https://github.com/stm32duino/wiki/wiki/API#i2c
                                             **most boards has 10K..12K pullup-up resistor
                                               on GPIO0/D3, GPIO2/D4/LED & pullup-down on
-                                              GPIO15/D8 for flash & boot
+                                              GPIO15/D8 for flash & boot 
 
    Frameworks & Libraries:
    ATtiny  Core - https://github.com/SpenceKonde/ATTinyCore
@@ -82,7 +82,7 @@ AHTxx::AHTxx(uint8_t address, AHTXX_I2C_SENSOR sensorType)
       - 4 other error
 */
 /**************************************************************************/
-#if defined(__AVR__)
+#if defined (__AVR__)
 bool AHTxx::begin(uint32_t speed, uint32_t stretch)
 {
   Wire.begin();
@@ -91,21 +91,25 @@ bool AHTxx::begin(uint32_t speed, uint32_t stretch)
 
   Wire.setWireTimeout(stretch, false); //experimental! default 25000usec, true-Wire hardware will be automatically reset on timeout
 
-#elif defined(ESP8266) || defined(ESP32)
+#elif defined (ESP8266) || defined (ESP32)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
 {
   Wire.begin(sda, scl);
 
   Wire.setClock(speed);               //experimental! ESP8266 I2C bus speed 1kHz..400kHz, default 100000Hz
 
+  #if defined (ESP8266)
   Wire.setClockStretchLimit(stretch); //experimental! default 150000usec
+  #else
+  Wire.setTimeout(stretch / 1000);    //experimental! default 50msec
+  #endif
 
-#elif defined(_VARIANT_ARDUINO_STM32_)
+#elif defined (_VARIANT_ARDUINO_STM32_)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed)
 {
   Wire.begin(sda, scl);
 
-  Wire.setClock(speed); //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
+  Wire.setClock(speed);               //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
 
 #else
 bool AHTxx::begin()
@@ -129,15 +133,16 @@ bool AHTxx::begin()
     - relative humidity range........ 0%..100%
     - relative humidity resolution... 0.024%
     - relative humidity accuracy..... +-2%
-    - response time.................. 8sec
-
-    - sensors data structure:
-      - {status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
-
+    - response time............ 5..30sec
+    - measurement with high frequency leads to heating of the
+      sensor, must be > 2 seconds apart to keep self-heating below 0.1C
     - long-term exposure for 60 hours outside the normal range
       (humidity > 80%) can lead to a temporary drift of the
       signal +3%, sensor slowly returns to the calibrated state at normal
       operating conditions
+
+    - sensors data structure:
+      - {status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
 
     - normal operating range T -20C..+60C, RH 10%..80%
     - maximum operating rage T -40C..+80C, RH 0%..100%
@@ -170,10 +175,9 @@ float AHTxx::readHumidity(bool readAHT)
     - temperature range........ -40C..+85C
     - temperature resolution... 0.01C
     - temperature accuracy..... +-0.3C
-    - response time............ 5..30sec*
-      *measurement with high frequency leads to heating of the
-       sensor, to detect +-0.1C time between measurements
-       should be > 2 seconds
+    - response time............ 5..30sec
+    - measurement with high frequency leads to heating of the
+      sensor, must be > 2 seconds apart to keep self-heating below 0.1C
 
     - sensors data structure:
       - {status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
@@ -295,7 +299,7 @@ uint8_t AHTxx::getStatus()
 /*
     setType()  
  
-    Set sensor type
+    Set sensor type on the fly
 
     NOTE:
     - AHT1x vs AHT2x:
