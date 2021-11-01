@@ -57,11 +57,11 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#if defined(__AVR__)
+#if defined (__AVR__)
 #include <avr/pgmspace.h>               //for Arduino AVR PROGMEM support
-#elif defined(ESP8266)
+#elif defined (ESP8266)
 #include <pgmspace.h>                   //for Arduino ESP8266 PROGMEM support
-#elif defined(_VARIANT_ARDUINO_STM32_)
+#elif defined (_VARIANT_ARDUINO_STM32_)
 #include <avr/pgmspace.h>               //for Arduino STM32 PROGMEM support
 #endif
 
@@ -133,11 +133,11 @@ class AHTxx
 
    AHTxx(uint8_t address = AHTXX_ADDRESS_X38, AHTXX_I2C_SENSOR = AHT1x_SENSOR);
 
-  #if defined(__AVR__)
+  #if defined (__AVR__)
    bool     begin(uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
-  #elif defined(ESP8266) || defined(ESP32)
+  #elif defined (ESP8266) || defined (ESP32)
    bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
-  #elif defined(_VARIANT_ARDUINO_STM32_)
+  #elif defined (_VARIANT_ARDUINO_STM32_)
    bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ);
   #else
    bool     begin();
