@@ -5,16 +5,16 @@
 This is an Arduino library for _Aosong ASAIR_ AHT10/AHT15/AHT20/AHT21/AHT25/AM2301**B**/AM2311**B** Digital Humidity & Temperature Sensor
 
 - AHT1x +1.8v..+3.6v, AHT2x +2.2v..+5.5v
-- AHT1x 0.25uA..320uA, AHT2x 0.25uA..980uA
+- AHT1x 0.25μA..320μA, AHT2x 0.25μA..980μA
 - temperature range -40°C..+85°C
 - humidity range 0%..100%
 - typical accuracy T +-0.3°C, RH +-2% **(1)**
-- typical resolution T 0.01C°, RH 0.024%
+- typical resolution T 0.01°C, RH 0.024%
 - normal operating range T -20°C..+60°C, RH 10%..80%
 - maximum operating rage T -40°C..+80°C, RH 0%..100%
-- I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
+- I²C bus speed 100KHz..400KHz, 10KHz recommended minimum
 - recommended measurement frequency 8sec..30sec **(2)**
-- recommended to route VDD or GND between I2C lines to reduce crosstalk between SCL & SDA
+- recommended to route VDD or GND between I²C lines to reduce crosstalk between SCL & SDA
 - power supply pins must be decoupled with 100nF capacitor
 
 Supports all sensors features:
