@@ -17,9 +17,8 @@
    - maximum operating rage T -40C..+80C, RH 0%..100%
    - response time 8..30sec*
    - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
-     *measurement with high frequency leads to heating
-      of the sensor, measurements must be > 2 seconds
-      apart to keep self-heating below 0.1C
+     *measurement with high frequency leads to heating of the
+      sensor, must be > 1 second to keep self-heating below 0.1C
 
    This device uses I2C bus to communicate, specials pins are required to interface
    Board:                                    SDA              SCL              Level
@@ -28,20 +27,23 @@
    Due, SAM3X8E............................. 20               21               3.3v
    Leonardo, Micro, ATmega32U4.............. 2                3                5v
    Digistump, Trinket, ATtiny85............. PB0              PB2              5v
-   Blue Pill, STM32F103xxxx boards.......... PB9/PB7*         PB8/PB6*         3.3v/5v
-   ESP8266 ESP-01........................... GPIO0**          GPIO2**          3.3v/5v
-   NodeMCU 1.0, WeMos D1 Mini............... GPIO4/D2         GPIO5/D1         3.3v/5v
-   ESP32.................................... GPIO21/D21       GPIO22/D22       3.3v
-                                             *hardware I2C Wire mapped to Wire1 in stm32duino
-                                              see https://github.com/stm32duino/wiki/wiki/API#i2c
-                                            **most boards has 10K..12K pullup-up resistor
-                                              on GPIO0/D3, GPIO2/D4/LED & pullup-down on
-                                              GPIO15/D8 for flash & boot
+   Blue Pill*, STM32F103xxxx boards*........ PB9/PB7          PB8/PB6          3.3v/5v
+   ESP8266 ESP-01**......................... GPIO0            GPIO2            3.3v/5v
+   NodeMCU 1.0**, WeMos D1 Mini**........... GPIO4/D2         GPIO5/D1         3.3v/5v
+   ESP32***................................. GPIO21/D21       GPIO22/D22       3.3v
+                                             GPIO16/D16       GPIO17/D17       3.3v
+                                            *hardware I2C Wire mapped to Wire1 in stm32duino
+                                             see https://github.com/stm32duino/wiki/wiki/API#i2c
+                                           **most boards has 10K..12K pullup-up resistor
+                                             on GPIO0/D3, GPIO2/D4/LED & pullup-down on
+                                             GPIO15/D8 for flash & boot
+                                          ***hardware I2C Wire mapped to TwoWire(0) aka GPIO21/GPIO22 in Arduino ESP32 
 
    Frameworks & Libraries:
+   Arduino Core - https://github.com/arduino/Arduino/tree/master/hardware
    ATtiny  Core - https://github.com/SpenceKonde/ATTinyCore
-   ESP32   Core - https://github.com/espressif/arduino-esp32
    ESP8266 Core - https://github.com/esp8266/Arduino
+   ESP32   Core - https://github.com/espressif/arduino-esp32
    STM32   Core - https://github.com/stm32duino/Arduino_Core_STM32
 
 
@@ -107,7 +109,7 @@
 #define AHTXX_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
 /* misc */
-#define AHTXX_I2C_SPEED_100KHZ   100000  //sensor I2C speed 100KHz..400KHz, in Hz
+#define AHTXX_I2C_SPEED_KHZ      100000  //sensor I2C speed 100KHz..400KHz, in Hz
 #define AHTXX_I2C_STRETCH_USEC   1000    //I2C stretch time, in usec
 #define AHTXX_FORCE_READ_DATA    true    //force to read data via I2C
 #define AHTXX_USE_READ_DATA      false   //force to use data from previous read
@@ -134,11 +136,13 @@ class AHTxx
    AHTxx(uint8_t address = AHTXX_ADDRESS_X38, AHTXX_I2C_SENSOR = AHT1x_SENSOR);
 
   #if defined (__AVR__)
-   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
-  #elif defined (ESP8266) || defined (ESP32)
-   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+  #elif defined (ESP8266)
+   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+  #elif defined (ESP32)
+   bool     begin(int32_t sda = SDA, int32_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
   #elif defined (_VARIANT_ARDUINO_STM32_)
-   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_100KHZ);
+   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ);
   #else
    bool     begin();
   #endif
