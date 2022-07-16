@@ -17,9 +17,8 @@
    - maximum operating rage T -40C..+80C, RH 0%..100%
    - response time 8..30sec*
    - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
-     *measurement with high frequency leads to heating
-      of the sensor, must be > 2 seconds apart to keep
-      self-heating below 0.1C
+     *measurement with high frequency leads to heating of the
+      sensor, must be > 1 second to keep self-heating below 0.1C
 
    This device uses I2C bus to communicate, specials pins are required to interface
    Board:                                    SDA              SCL              Level
@@ -28,20 +27,23 @@
    Due, SAM3X8E............................. 20               21               3.3v
    Leonardo, Micro, ATmega32U4.............. 2                3                5v
    Digistump, Trinket, ATtiny85............. PB0              PB2              5v
-   Blue Pill, STM32F103xxxx boards.......... PB9/PB7*         PB8/PB6*         3.3v/5v
-   ESP8266 ESP-01........................... GPIO0**          GPIO2**          3.3v/5v
-   NodeMCU 1.0, WeMos D1 Mini............... GPIO4/D2         GPIO5/D1         3.3v/5v
-   ESP32.................................... GPIO21/D21       GPIO22/D22       3.3v
-                                             *hardware I2C Wire mapped to Wire1 in stm32duino
-                                              see https://github.com/stm32duino/wiki/wiki/API#i2c
-                                            **most boards has 10K..12K pullup-up resistor
-                                              on GPIO0/D3, GPIO2/D4/LED & pullup-down on
-                                              GPIO15/D8 for flash & boot 
+   Blue Pill*, STM32F103xxxx boards*........ PB9/PB7          PB8/PB6          3.3v/5v
+   ESP8266 ESP-01**......................... GPIO0            GPIO2            3.3v/5v
+   NodeMCU 1.0**, WeMos D1 Mini**........... GPIO4/D2         GPIO5/D1         3.3v/5v
+   ESP32***................................. GPIO21/D21       GPIO22/D22       3.3v
+                                             GPIO16/D16       GPIO17/D17       3.3v
+                                            *hardware I2C Wire mapped to Wire1 in stm32duino
+                                             see https://github.com/stm32duino/wiki/wiki/API#i2c
+                                           **most boards has 10K..12K pullup-up resistor
+                                             on GPIO0/D3, GPIO2/D4/LED & pullup-down on
+                                             GPIO15/D8 for flash & boot
+                                          ***hardware I2C Wire mapped to TwoWire(0) aka GPIO21/GPIO22 in Arduino ESP32  
 
    Frameworks & Libraries:
+   Arduino Core - https://github.com/arduino/Arduino/tree/master/hardware
    ATtiny  Core - https://github.com/SpenceKonde/ATTinyCore
-   ESP32   Core - https://github.com/espressif/arduino-esp32
    ESP8266 Core - https://github.com/esp8266/Arduino
+   ESP32   Core - https://github.com/espressif/arduino-esp32
    STM32   Core - https://github.com/stm32duino/Arduino_Core_STM32
 
 
@@ -88,29 +90,32 @@ bool AHTxx::begin(uint32_t speed, uint32_t stretch)
 {
   Wire.begin();
 
-  Wire.setClock(speed);                //experimental! AVR I2C bus speed 31kHz..400kHz, default 100000Hz
+  Wire.setClock(speed);                                    //experimental! AVR I2C bus speed 31kHz..400kHz, default 100000Hz
 
-  Wire.setWireTimeout(stretch, false); //experimental! default 25000usec, true-Wire hardware will be automatically reset on timeout
+  Wire.setWireTimeout(stretch, false);                     //experimental! default 25000usec, true=Wire hardware will be automatically reset on timeout
 
-#elif defined (ESP8266) || defined (ESP32)
+#elif defined (ESP8266)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
 {
   Wire.begin(sda, scl);
 
-  Wire.setClock(speed);               //experimental! ESP8266 I2C bus speed 1kHz..400kHz, default 100000Hz
+  Wire.setClock(speed);                                    //experimental! ESP8266 I2C bus speed 1kHz..400kHz, default 100000Hz
 
-  #if defined (ESP8266)
-  Wire.setClockStretchLimit(stretch); //experimental! default 150000usec
-  #else
-  Wire.setTimeout(stretch / 1000);    //experimental! default 50msec
-  #endif
+  Wire.setClockStretchLimit(stretch);                      //experimental! default 150000usec
+
+#elif defined (ESP32)
+bool AHTxx::begin(int32_t sda, int32_t scl, uint32_t speed, uint32_t stretch) //int32_t SDA & SCL for Master, uint8_t SDA & SCL for Slave
+{
+  if (Wire.begin(sda, scl, speed) != true) {return false;} //experimental! ESP32 I2C bus speed ???kHz..400kHz, default 100000Hz
+
+  Wire.setTimeout(stretch / 1000);                         //experimental! default 50msec
 
 #elif defined (_VARIANT_ARDUINO_STM32_)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed)
 {
   Wire.begin(sda, scl);
 
-  Wire.setClock(speed);               //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
+  Wire.setClock(speed);                                    //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
 
 #else
 bool AHTxx::begin()
@@ -118,9 +123,9 @@ bool AHTxx::begin()
   Wire.begin();
 #endif
 
-  delay(AHT2X_POWER_ON_DELAY); //wait for sensor to initialize
+  delay(AHT2X_POWER_ON_DELAY);                             //wait for sensor to initialize
 
-  return softReset();          //soft reset is recommended at start (reset, set normal mode, set calibration bit & check calibration bit)
+  return softReset();                                      //soft reset is recommended at start (reset, set normal mode, set calibration bit & check calibration bit)
 }
 
 
