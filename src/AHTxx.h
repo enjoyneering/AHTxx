@@ -37,9 +37,9 @@
                                            **most boards has 10K..12K pullup-up resistor
                                              on GPIO0/D3, GPIO2/D4/LED & pullup-down on
                                              GPIO15/D8 for flash & boot
-                                          ***hardware I2C Wire mapped to TwoWire(0) aka GPIO21/GPIO22 in Arduino ESP32 
+                                          ***hardware I2C Wire mapped to TwoWire(0) aka GPIO21/GPIO22 in Arduino ESP32
 
-   Frameworks & Libraries:
+   Supported frameworks:
    Arduino Core - https://github.com/arduino/Arduino/tree/master/hardware
    ATtiny  Core - https://github.com/SpenceKonde/ATTinyCore
    ESP8266 Core - https://github.com/esp8266/Arduino
@@ -48,7 +48,7 @@
 
 
    GNU GPL license, all text above must be included in any redistribution,
-   see link for details  - https://www.gnu.org/licenses/licenses.html
+   see link for details - https://www.gnu.org/licenses/licenses.html
 */
 /***************************************************************************************************/
 
@@ -109,7 +109,7 @@
 #define AHTXX_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
 /* misc */
-#define AHTXX_I2C_SPEED_KHZ      100000  //sensor I2C speed 100KHz..400KHz, in Hz
+#define AHTXX_I2C_SPEED_HZ       100000  //sensor I2C speed 100KHz..400KHz, in Hz
 #define AHTXX_I2C_STRETCH_USEC   1000    //I2C stretch time, in usec
 #define AHTXX_FORCE_READ_DATA    true    //force to read data via I2C
 #define AHTXX_USE_READ_DATA      false   //force to use data from previous read
@@ -136,13 +136,13 @@ class AHTxx
    AHTxx(uint8_t address = AHTXX_ADDRESS_X38, AHTXX_I2C_SENSOR = AHT1x_SENSOR);
 
   #if defined (__AVR__)
-   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+   bool     begin(uint32_t speed = AHTXX_I2C_SPEED_HZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
   #elif defined (ESP8266)
-   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_HZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
   #elif defined (ESP32)
-   bool     begin(int32_t sda = SDA, int32_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
+   bool     begin(int32_t sda = SDA, int32_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_HZ, uint32_t stretch = AHTXX_I2C_STRETCH_USEC);
   #elif defined (_VARIANT_ARDUINO_STM32_)
-   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_KHZ);
+   bool     begin(uint8_t sda = SDA, uint8_t scl = SCL, uint32_t speed = AHTXX_I2C_SPEED_HZ);
   #else
    bool     begin();
   #endif
