@@ -79,7 +79,7 @@ void setup()
   Serial.begin(115200);
   Serial.println();
   
-  while (aht10.begin() != true)
+  while (aht10.begin() != true) //for ESP-01 use aht10.begin(0, 2);
   {
     Serial.println(F("AHT1x not connected or fail to load calibration coefficient")); //(F()) save string to flash & keeps dynamic memory free
 
