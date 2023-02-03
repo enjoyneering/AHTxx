@@ -27,7 +27,7 @@
    Due, SAM3X8E............................. 20               21               3.3v
    Leonardo, Micro, ATmega32U4.............. 2                3                5v
    Digistump, Trinket, Gemma, ATtiny85...... PB0/D0           PB2/D2           3.3v/5v
-   Blue Pill*, STM32F103xxxx boards*........ PB9/PB7          PB8/PB6          3.3v/5v
+   Blue Pill*, STM32F103xxxx boards*........ PB7/PB9          PB6/PB8          3.3v/5v
    ESP8266 ESP-01**......................... GPIO0            GPIO2            3.3v/5v
    NodeMCU 1.0**, WeMos D1 Mini**........... GPIO4/D2         GPIO5/D1         3.3v/5v
    ESP32***................................. GPIO21/D21       GPIO22/D22       3.3v
@@ -106,14 +106,14 @@ bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
   Wire.setClockStretchLimit(stretch);                      //experimental! default 150000usec
 
 #elif defined (ESP32)
-bool AHTxx::begin(int32_t sda, int32_t scl, uint32_t speed, uint32_t stretch) //int32_t SDA & SCL for Master, uint8_t SDA & SCL for Slave
+bool AHTxx::begin(int32_t sda, int32_t scl, uint32_t speed, uint32_t stretch) //"int32_t" for Master SDA & SCL, "uint8_t" for Slave SDA & SCL
 {
   if (Wire.begin(sda, scl, speed) != true) {return false;} //experimental! ESP32 I2C bus speed ???kHz..400kHz, default 100000Hz
 
   Wire.setTimeout(stretch / 1000);                         //experimental! default 50msec
 
 #elif defined (ARDUINO_ARCH_STM32)
-bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed)
+bool AHTxx::begin(uint32_t sda, uint32_t scl, uint32_t speed) //"uint32_t" for pins only, "uint8_t" calls wrong "setSCL(PinName scl)"
 {
   Wire.begin(sda, scl);
 
