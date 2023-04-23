@@ -18,13 +18,14 @@
    - response time 8..30sec*
    - I2C bus speed 100KHz..400KHz, 10KHz recommended minimum
      *measurement with high frequency leads to heating of the
-      sensor, must be > 1 second to keep self-heating below 0.1C
+      sensor, interval must be > 1 second to keep self-heating below 0.1C
 
    This device uses I2C bus to communicate, specials pins are required to interface
    Board                                     SDA              SCL              Level
    Uno, Mini, Pro, ATmega168, ATmega328..... A4               A5               5v
    Mega2560................................. 20               21               5v
    Due, SAM3X8E............................. 20               21               3.3v
+   MKR Zero, XIAO SAMD21, SAMD21xx.......... PA08             PA09             3.3v
    Leonardo, Micro, ATmega32U4.............. 2                3                5v
    Digistump, Trinket, Gemma, ATtiny85...... PB0/D0           PB2/D2           3.3v/5v
    Blue Pill*, STM32F103xxxx boards*........ PB7/PB9          PB6/PB8          3.3v/5v
@@ -45,6 +46,7 @@
    ESP8266 Core - https://github.com/esp8266/Arduino
    ESP32   Core - https://github.com/espressif/arduino-esp32
    STM32   Core - https://github.com/stm32duino/Arduino_Core_STM32
+   SAMD    Core - https://github.com/arduino/ArduinoCore-samd
 
 
    GNU GPL license, all text above must be included in any redistribution,
@@ -85,7 +87,7 @@ AHTxx::AHTxx(uint8_t address, AHTXX_I2C_SENSOR sensorType)
       - 4 other error
 */
 /**************************************************************************/
-#if defined (__AVR__)
+#if defined (ARDUINO_ARCH_AVR)
 bool AHTxx::begin(uint32_t speed, uint32_t stretch)
 {
   Wire.begin();
@@ -96,7 +98,7 @@ bool AHTxx::begin(uint32_t speed, uint32_t stretch)
   Wire.setWireTimeout(stretch, false);                     //experimental! default 25000usec, true=Wire hardware will be automatically reset to default on timeout
   #endif
 
-#elif defined (ESP8266)
+#elif defined (ARDUINO_ARCH_ESP8266)
 bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
 {
   Wire.begin(sda, scl);
@@ -105,7 +107,7 @@ bool AHTxx::begin(uint8_t sda, uint8_t scl, uint32_t speed, uint32_t stretch)
 
   Wire.setClockStretchLimit(stretch);                      //experimental! default 150000usec
 
-#elif defined (ESP32)
+#elif defined  (ARDUINO_ARCH_ESP32)
 bool AHTxx::begin(int32_t sda, int32_t scl, uint32_t speed, uint32_t stretch) //"int32_t" for Master SDA & SCL, "uint8_t" for Slave SDA & SCL
 {
   if (Wire.begin(sda, scl, speed) != true) {return false;} //experimental! ESP32 I2C bus speed ???kHz..400kHz, default 100000Hz
@@ -118,6 +120,13 @@ bool AHTxx::begin(uint32_t sda, uint32_t scl, uint32_t speed) //"uint32_t" for p
   Wire.begin(sda, scl);
 
   Wire.setClock(speed);                                    //experimental! STM32 I2C bus speed ???kHz..400kHz, default 100000Hz
+
+#elif defined (ARDUINO_ARCH_SAMD)
+bool LiquidCrystal_I2C::begin(uint8_t columns, uint8_t rows, lcdFontSize fontSize, uint32_t speed)
+{
+  Wire.begin();
+
+  Wire.setClock(speed);                                    //experimental! SAMD21 I2C bus speed ???kHz..400kHz, default 100000Hz
 
 #else
 bool AHTxx::begin()
@@ -375,15 +384,12 @@ void AHTxx::_readMeasurement()
   }
 
   /* read n-bytes from "wire.h" rxBuffer */
-  for (uint8_t i = 0; i < dataSize; i++)
-  {
-    _rawData[i] = Wire.read();
-  }
+  Wire.readBytes(_rawData, dataSize);                  //"readBytes()", from Stream Class 
 
   /* check busy bit after measurement dalay */
-  _status = _getBusy(AHTXX_USE_READ_DATA); //update status byte, read status byte & check busy bit
+  _status = _getBusy(AHTXX_USE_READ_DATA);             //update status byte, read status byte & check busy bit
 
-  if (_status != AHTXX_NO_ERROR) {return;} //no reason to continue, sensor is busy
+  if (_status != AHTXX_NO_ERROR) {return;}             //no reason to continue, sensor is busy
 
   /* check CRC8, for AHT2x only */
   if ((_sensorType == AHT2x_SENSOR) && (_checkCRC8() != true)) {_status = AHTXX_CRC8_ERROR;} //update status byte
