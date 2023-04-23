@@ -28,6 +28,7 @@ Tested on:
 - Arduino ESP8266
 - Arduino ESP32
 - Arduino STM32
+- Arduino SAMD21
 
 **(1)** Prolonged exposure for 60 hours at humidity > 80% can lead to a temporary drift of the signal +3%. Sensor slowly returns to the calibrated state at normal operating conditions.<br>
 **(2)** High frequency measurement causes the sensor to heat up, the interval must be greater than 1 second to keep self-heating below 0.1°C.<br>
