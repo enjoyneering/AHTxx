@@ -418,7 +418,7 @@ bool AHTxx::_setInitializationRegister(uint8_t value)
   Wire.write(value);                                               //send initialization register controls
   Wire.write(AHTXX_INIT_CTRL_NOP);                                 //send initialization register NOP control
 
-  return (Wire.endTransmission(true) == 0);                        //true=success, false=I2C error
+  return (Wire.endTransmission(true) != 0);                        //true=success, false=I2C error
 }
 
 
