@@ -33,6 +33,7 @@
    NodeMCU 1.0**, WeMos D1 Mini**........... GPIO4/D2         GPIO5/D1         3.3v/5v
    ESP32***................................. GPIO21/D21       GPIO22/D22       3.3v
                                              GPIO16/D16       GPIO17/D17       3.3v
+   ESP32-S3................................. GPIO8            GPIO9            3.3V
                                             *hardware I2C Wire mapped to Wire1 in stm32duino
                                              see https://github.com/stm32duino/wiki/wiki/API#I2C
                                            **most boards has 10K..12K pullup-up resistor
@@ -134,7 +135,6 @@ AHTXX_I2C_SENSOR;
 class AHTxx
 {
   public:
-
    AHTxx(uint8_t address = AHTXX_ADDRESS_X38, AHTXX_I2C_SENSOR = AHT1x_SENSOR);
 
   #if defined (ARDUINO_ARCH_AVR)
@@ -167,12 +167,14 @@ class AHTxx
    uint8_t          _status;
    uint8_t          _rawData[7] = {0, 0, 0, 0, 0, 0, 0}; //{status, RH, RH, RH+T, T, T, CRC}, CRC for AHT2x only
 
-   void     _readMeasurement(); //TODO: IRAM_ATTR for ESP8266
    bool     _setInitializationRegister(uint8_t value); 
    uint8_t  _readStatusRegister();
    uint8_t  _getCalibration();
    uint8_t  _getBusy(bool readAHT = AHTXX_FORCE_READ_DATA);
    bool     _checkCRC8();
+
+   protected:
+   void     _readMeasurement(); //TODO: IRAM_ATTR for ESP8266, ESP32
 };
 
 #endif
