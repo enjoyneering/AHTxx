@@ -33,6 +33,7 @@
    NodeMCU 1.0**, WeMos D1 Mini**........... GPIO4/D2         GPIO5/D1         3.3v/5v
    ESP32***................................. GPIO21/D21       GPIO22/D22       3.3v
                                              GPIO16/D16       GPIO17/D17       3.3v
+   ESP32-S3................................. GPIO8            GPIO9            3.3V
                                             *hardware I2C Wire mapped to Wire1 in stm32duino
                                              see https://github.com/stm32duino/wiki/wiki/API#I2C
                                            **most boards has 10K..12K pullup-up resistor
@@ -333,69 +334,6 @@ void AHTxx::setType(AHTXX_I2C_SENSOR sensorType)
 
 
 
-
-/**************************************************************************/
-/*
-    _readMeasurement()
-
-    Start new measurement, read sensor data to buffer & collect errors
-
-    NOTE:
-    - sensors data structure:
-      - {status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only & for
-        status description see "_readStatusRegister()" NOTE
-*/
-/**************************************************************************/
-void AHTxx::_readMeasurement()
-{
-  /* send measurement command */
-  Wire.beginTransmission(_address);
-
-  Wire.write(AHTXX_START_MEASUREMENT_REG);      //send measurement command, strat measurement
-  Wire.write(AHTXX_START_MEASUREMENT_CTRL);     //send measurement control
-  Wire.write(AHTXX_START_MEASUREMENT_CTRL_NOP); //send measurement NOP control
-
-  if (Wire.endTransmission(true) != 0)          //collision on I2C bus
-  {
-    _status = AHTXX_ACK_ERROR;                  //update status byte, sensor didn't return ACK
-
-    return;                                     //no reason to continue
-  }
-
-  /* check busy bit */
-  _status = _getBusy(AHTXX_FORCE_READ_DATA);                                                //update status byte, read status byte & check busy bit
-
-  if      (_status == AHTXX_BUSY_ERROR) {delay(AHTXX_MEASUREMENT_DELAY - AHTXX_CMD_DELAY);}
-  else if (_status != AHTXX_NO_ERROR)   {return;}                                           //no reason to continue, received data smaller than expected
-
-  /* read data from sensor */
-  uint8_t dataSize;
-
-  if   (_sensorType == AHT1x_SENSOR) {dataSize = 6;}   //{status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
-  else                               {dataSize = 7;}
-
-  Wire.requestFrom(_address, dataSize, (uint8_t)true); //read n-byte to "wire.h" rxBuffer, true-send stop after transmission
-
-  if (Wire.available() != dataSize)
-  {
-    _status = AHTXX_DATA_ERROR;                        //update status byte, received data smaller than expected
-
-    return;                                            //no reason to continue
-  }
-
-  /* read n-bytes from "wire.h" rxBuffer */
-  Wire.readBytes(_rawData, dataSize);                  //"readBytes()", from Stream Class 
-
-  /* check busy bit after measurement dalay */
-  _status = _getBusy(AHTXX_USE_READ_DATA);             //update status byte, read status byte & check busy bit
-
-  if (_status != AHTXX_NO_ERROR) {return;}             //no reason to continue, sensor is busy
-
-  /* check CRC8, for AHT2x only */
-  if ((_sensorType == AHT2x_SENSOR) && (_checkCRC8() != true)) {_status = AHTXX_CRC8_ERROR;} //update status byte
-}
-
-
 /**************************************************************************/
 /*
     _setInitializationRegister()
@@ -552,4 +490,66 @@ bool AHTxx::_checkCRC8()
   }
 
   return true;
+}
+
+
+/**************************************************************************/
+/*
+    _readMeasurement()
+
+    Start new measurement, read sensor data to buffer & collect errors
+
+    NOTE:
+    - sensors data structure:
+      - {status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only & for
+        status description see "_readStatusRegister()" NOTE
+*/
+/**************************************************************************/
+void AHTxx::_readMeasurement()
+{
+  /* send measurement command */
+  Wire.beginTransmission(_address);
+
+  Wire.write(AHTXX_START_MEASUREMENT_REG);      //send measurement command, strat measurement
+  Wire.write(AHTXX_START_MEASUREMENT_CTRL);     //send measurement control
+  Wire.write(AHTXX_START_MEASUREMENT_CTRL_NOP); //send measurement NOP control
+
+  if (Wire.endTransmission(true) != 0)          //collision on I2C bus
+  {
+    _status = AHTXX_ACK_ERROR;                  //update status byte, sensor didn't return ACK
+
+    return;                                     //no reason to continue
+  }
+
+  /* check busy bit */
+  _status = _getBusy(AHTXX_FORCE_READ_DATA);                                                //update status byte, read status byte & check busy bit
+
+  if      (_status == AHTXX_BUSY_ERROR) {delay(AHTXX_MEASUREMENT_DELAY - AHTXX_CMD_DELAY);}
+  else if (_status != AHTXX_NO_ERROR)   {return;}                                           //no reason to continue, received data smaller than expected
+
+  /* read data from sensor */
+  uint8_t dataSize;
+
+  if   (_sensorType == AHT1x_SENSOR) {dataSize = 6;}   //{status, RH, RH, RH+T, T, T, CRC*}, *CRC for AHT2x only
+  else                               {dataSize = 7;}
+
+  Wire.requestFrom(_address, dataSize, (uint8_t)true); //read n-byte to "wire.h" rxBuffer, true-send stop after transmission
+
+  if (Wire.available() != dataSize)
+  {
+    _status = AHTXX_DATA_ERROR;                        //update status byte, received data smaller than expected
+
+    return;                                            //no reason to continue
+  }
+
+  /* read n-bytes from "wire.h" rxBuffer */
+  Wire.readBytes(_rawData, dataSize);                  //"readBytes()" from Stream Class 
+
+  /* check busy bit after measurement dalay */
+  _status = _getBusy(AHTXX_USE_READ_DATA);             //update status byte, read status byte & check busy bit
+
+  if (_status != AHTXX_NO_ERROR) {return;}             //no reason to continue, sensor is busy
+
+  /* check CRC8, for AHT2x only */
+  if ((_sensorType == AHT2x_SENSOR) && (_checkCRC8() != true)) {_status = AHTXX_CRC8_ERROR;} //update status byte
 }
